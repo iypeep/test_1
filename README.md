@@ -76,7 +76,7 @@ done < missing-npm-tarballs.txt
 2. 本地起 registry：`python serve-tarballs.py 4873`。
 3. 在 Hermes 源码根目录执行：
    ```powershell
-   __omp_magic("", "LOCALAPPDATA%\\hermes\\node\\npm.cmd ci --include=dev --registry http://127.0.0.1:4873 --replace-registry-host=always")
+   $env:LOCALAPPDATA\hermes\node\npm.cmd ci --include=dev --registry http://127.0.0.1:4873 --replace-registry-host=always
    ```
 4. `hermes desktop --force-build`（重新打包 `apps/desktop/release/win-unpacked`）。
 5. 启动桌面 App 验证 + 把结果告诉你。
@@ -85,8 +85,8 @@ done < missing-npm-tarballs.txt
 
 ## 七、不需要你提供的（本机已确认具备）
 
-- **Electron 40.10.2**（`electron-v40.10.2-win32-x64.zip`，138 MB）已在 `%LOCALAPPDATA%\electron\Cache`。
-- Node/npm：Hermes 自带 `%LOCALAPPDATA%\hermes\node`（node v22.23.2 + npm 10.9.8，满足仓库 `engines` 约束）。
+- **Electron 40.10.2**（`electron-v40.10.2-win32-x64.zip`，138 MB）已在 `$env:LOCALAPPDATA\electron\Cache`。
+- Node/npm：Hermes 自带 `$env:LOCALAPPDATA\hermes\node`（node v22.23.2 + npm 10.9.8，满足仓库 `engines` 约束）。
 - electron-builder 的打包工具（app-builder/nsis 等）从 GitHub Releases 拉取，GitHub 可达。
 
 ## 八、备注与风险
