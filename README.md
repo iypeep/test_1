@@ -8,7 +8,7 @@
 | 目录 | 内容 | 状态 |
 | --- | --- | --- |
 | [`npm-offline/`](npm-offline/README.md) | Hermes 桌面端重建所需的 npm tarball：清单 + 下载/校验脚本 + 本地 registry 服务 + 263 个已校验的 tarball（387.5 MiB） | ✅ 已完成抓取，等接收方 `npm ci` |
-| [`hardware/`](hardware/) | STM32F407VET6（LQFP-100）SMT 托盘选型指南（JEDEC 华夫盘 / 3D 打印摆放盘 / 回流焊载具） | 参考资料 |
+| [`hardware/`](hardware/) | [`STM32F407VET6-LQFP100-SMT托盘选型.md`](hardware/STM32F407VET6-LQFP100-SMT托盘选型.md)（JEDEC 华夫盘 / 3D 打印摆放盘 / 回流焊载具）；[`lumenpnp/`](hardware/lumenpnp/README.md)：LumenPnP 贴片机非阻容小批量物料的供料方案 + 打印成本计算脚本与结果 | 参考资料 |
 | [`docs/`](docs/) | `omp`（oh-my-pi）斜杠命令速查 v18.2.3 —— 79 个内置命令 | 参考资料 |
 | [`notes/`](notes/) | `riscv32-nemu/`：ICS-PA 给 NEMU 加 riscv32 时的反汇编与运行日志 | 调试留档 |
 | [`personal/`](personal/) | 个人简历 PDF | 私有资料（注意本仓库为 public） |
@@ -28,3 +28,7 @@
   `npm-offline/README.md` 改写为"任务 + 现状"结构并修正路径；
   新增跨平台下载脚本 `fetch-tarballs.py`（原 PowerShell 脚本保留）；
   完成 263 个 tarball 的抓取与 sha512 校验，产出 `results.tsv`。
+- 2026-09-22：新增 `hardware/lumenpnp/` —— 从官方仓库（`opulo-inc/lumenpnp` v4.1.0，`--depth 1` 克隆）
+  与 OpenPnP 源码核实后，整理出非阻容 / 小批量物料的供料方案（剪带 / 散料 / 管装 / JEDEC 盘 / 厚料各用什么），
+  并给出"买还是打印"的量化依据：新增 `stl-volume.py`（纯标准库，解析二进制 STL 算实体体积与耗材量）
+  及其产物 `strip-feeder-print-cost.tsv` —— 官方散料飞达六个规格合计 36.9 g 耗材。
