@@ -1,0 +1,17 @@
+# 换行统一：仓库内一律存 LF，Windows 专用脚本检出为 CRLF（否则 autocrlf 会把清单里的 \t/<TAB> 行读成带 \r 的脏行）
+* text=auto eol=lf
+*.ps1 text eol=crlf
+*.bat text eol=crlf
+*.cmd text eol=crlf
+
+# 二进制：绝不转换、不做文本 diff（tarball 换个字节 sha512 就不匹配了）
+*.tgz binary
+*.tar.gz binary
+*.zip binary
+*.pdf binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.ico binary
+*.exe binary
+*.dll binary
