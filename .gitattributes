@@ -9,6 +9,7 @@
 *.tar.gz binary
 *.zip binary
 *.pdf binary
+*.pptx binary
 *.png binary
 *.jpg binary
 *.jpeg binary
