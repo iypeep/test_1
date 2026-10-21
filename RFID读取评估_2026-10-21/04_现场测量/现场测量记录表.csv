@@ -1,0 +1,15 @@
+case_id,date,face_down,face_toward_reader,reader_vendor,reader_model,reader_gain_db,power_dbm,antenna,position,distance_cm,distinct_epc,unit_tags_read_of_6,reads_per_sec,rssi_min,rssi_max,seconds,photos,note
+A1,2026-10-22,B-BOTTOM,F-FRONT,,,,,1,下,0,,,,,,,产线实际姿态（示例行，请按实测填）
+A2,2026-10-22,B-BOTTOM,F-FRONT,,,,,1,侧,10,,,,,,,
+A3,2026-10-22,B-BOTTOM,F-BACK,,,,,1,侧,10,,,,,,,
+A4,2026-10-22,F-FRONT,F-FRONT,,,,,1,侧,10,,,,,,,正面朝下：标签是否被箱体遮挡
+A5,2026-10-22,F-BACK,F-BACK,,,,,1,侧,10,,,,,,,条码面朝下
+A6,2026-10-22,T-TOP,T-TOP,,,,,1,上,10,,,,,,,倒置
+B1-0,2026-10-22,B-BOTTOM,F-FRONT,,,,30,1,上,0,,,,,,,
+B1-10,2026-10-22,B-BOTTOM,F-FRONT,,,,30,1,上,10,,,,,,,
+B1-20,2026-10-22,B-BOTTOM,F-FRONT,,,,30,1,上,20,,,,,,,
+B1-30,2026-10-22,B-BOTTOM,F-FRONT,,,,30,1,上,30,,,,,,,
+B1-50,2026-10-22,B-BOTTOM,F-FRONT,,,,30,1,上,50,,,,,,,
+C-R420-0,2026-10-22,B-BOTTOM,F-FRONT,Impinj,R420,,30,1,侧,0,,,,,,,
+C-M6e-10,2026-10-22,B-BOTTOM,F-FRONT,JADAK,M6e,,30,1,侧,10,,,,,,,
+C-其他-30,2026-10-22,B-BOTTOM,F-FRONT,,,,30,1,侧,30,,,,,,,

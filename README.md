@@ -9,6 +9,7 @@
 | --- | --- | --- |
 | [`npm-offline/`](npm-offline/README.md) | Hermes 桌面端重建所需的 npm tarball：清单 + 下载/校验脚本 + 本地 registry 服务 + 263 个已校验的 tarball（387.5 MiB） | ✅ 已完成抓取，等接收方 `npm ci` |
 | [`hardware/`](hardware/) | [`STM32F407VET6-LQFP100-SMT托盘选型.md`](hardware/STM32F407VET6-LQFP100-SMT托盘选型.md)（JEDEC 华夫盘 / 3D 打印摆放盘 / 回流焊载具）；[`lumenpnp/`](hardware/lumenpnp/README.md)：LumenPnP 贴片机非阻容小批量物料的供料方案 + 打印成本计算脚本与结果 | 参考资料 |
+| [`RFID读取评估_2026-10-21/`](RFID读取评估_2026-10-21/README.md) | 7H3AA-PALLET 卡通箱 RFID 读取能力评估：六项要求（3D 放置方式 / 模组手册对比 / 距离 / 增益 / 厂家 / 箱型）+ 8 页汇报 PPT + 实测填表框架（R3–R6 为模型预测，标注清楚） | 报告 + 框架 |
 | [`docs/`](docs/) | `omp`（oh-my-pi）斜杠命令速查 v18.2.3 —— 79 个内置命令 | 参考资料 |
 | [`notes/`](notes/) | `riscv32-nemu/`：ICS-PA 给 NEMU 加 riscv32 时的反汇编与运行日志 | 调试留档 |
 | [`personal/`](personal/) | 个人简历 PDF | 私有资料（注意本仓库为 public） |
@@ -32,3 +33,6 @@
   与 OpenPnP 源码核实后，整理出非阻容 / 小批量物料的供料方案（剪带 / 散料 / 管装 / JEDEC 盘 / 厚料各用什么），
   并给出"买还是打印"的量化依据：新增 `stl-volume.py`（纯标准库，解析二进制 STL 算实体体积与耗材量）
   及其产物 `strip-feeder-print-cost.tsv` —— 官方散料飞达六个规格合计 36.9 g 耗材。
+- 2026-10-22：`RFID读取评估_2026-10-21/` 由单一 7z 展开为可浏览文件树 —— 新增 `09_报告/`
+  （六项要求版报告 MD/PPTX/PDF + 11 张图 + `_sim` 预测结果 + `_build` 全部生成脚本，含 Blender 3D 场景脚本）
+  与 `10_实测框架/`（现场五张 CSV + 填写纪律 + 判定口径）；移除已被取代的旧 7z；文本统一 LF。

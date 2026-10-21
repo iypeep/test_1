@@ -1,0 +1,41 @@
+{
+  "MODEL": {
+    "rssi_ref": -41.0,
+    "d_ref": 0.05,
+    "d_min": 0.02,
+    "rssi_th": -62.0,
+    "sigma": 2.0,
+    "tag_spread": 4.0,
+    "gain": {
+      "6": 0.0,
+      "9": 3.0
+    },
+    "vendor": {
+      "A-Impinj体系": 0.0,
+      "B-国产方案": -2.0
+    },
+    "face_loss": {
+      "B-BOTTOM": 3.5,
+      "T-TOP": 4.0,
+      "F-FRONT": 10.0,
+      "F-BACK": 12.0,
+      "F-FRONT_DOWN": 5.0,
+      "F-BACK_DOWN": 6.0,
+      "S-LEFT_DOWN": 4.5,
+      "S-RIGHT_DOWN": 4.5,
+      "S-LEFT": 8.0,
+      "S-RIGHT": 8.0
+    },
+    "rate_base": 26.0,
+    "seed": 20261022
+  },
+  "tag_offsets_dB": [
+    -2.25,
+    -4.76,
+    0.77,
+    -1.0,
+    1.29,
+    -2.59
+  ],
+  "说明": "模拟值，非实测。rssi = rssi_ref + gain + vendor + (-20log10(d/d_ref)) + face_loss；p = 1/(1+exp((rssi_th-rssi)/sigma))"
+}

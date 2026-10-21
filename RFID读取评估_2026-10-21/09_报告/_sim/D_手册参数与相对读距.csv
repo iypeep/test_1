@@ -1,0 +1,13 @@
+﻿参数,取值,来源/说明
+天线增益（6 dBi 天线）,6 dBi,Impinj Guardwall / Far Field LHP 手册（6 dBi）
+天线增益（9 dBi 天线）,9 dBi,同类 9 dBi 板状天线；相对 6 dBi +3 dB
++3 dB 增益带来的读距倍数,x1.41,自由空间 FSPL 反比：10^(3/20)
+读码器输出（现场）,30 dBm,SettingPrm.xml（现场实测）
+读码器输出（Impinj R420 / R700）,32.5 / 33 dBm,Impinj Fixed Reader Portfolio 手册
+接收灵敏度（R420 / R700）,-84 / -92 dBm,同上
+标签读灵敏度（Monza R6 系列）,-22 dBm,Impinj Monza R6 Series spec table
+6 dBi 下自由空间读距（30 dBm）,约 8-10 m,手册量级；本例仅作相对基准
+9 dBi 下自由空间读距（30 dBm）,约 11-14 m,同上 ×1.41
+箱体 + 塑料背壳 + 极化失配附加损耗,25-30 dB,本报告模型假设（待实测标定）
+附加 28 dB 对应的读距衰减,x1/25,10^(28/20)
+折算到箱内的读全窗口,约 0.3-0.6 m,手册读距 ÷25；与 R3 曲线一致

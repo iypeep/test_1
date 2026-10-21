@@ -1,0 +1,6 @@
+2026-10-21 16:40:07.585 -Info 
+[Sql]:SELECT `SSCC`,`Weight`,`Item`,`BoxQty`,`ShipingModel`,`DateTime` FROM `CartonTable`  WHERE ( `Item` = @Item0 )  
+[Pars]:
+[Name]:@Item0 [Value]:AX8252B168355 [Type]:String    
+
+

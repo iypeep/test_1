@@ -1,0 +1,7 @@
+﻿编号,箱体姿态,接触底面,朝向读码器的面,读码器位置,距离_cm,读码器厂家型号,天线增益_dBi,天线号,读全数_of_6,3箱读全数,读取率_tags_s,RSSI_min,RSSI_max,拍照,备注
+A1,正立,B-BOTTOM,B-BOTTOM,下,10,,,
+A2,倒置,T-TOP,T-TOP,下,10,,,
+A3,侧放,F-FRONT,F-FRONT,下,10,,,
+A4,侧放,F-BACK,F-BACK,下,10,,,
+A5,侧躺,S-LEFT,S-LEFT,下,10,,,
+A6,侧躺,S-RIGHT,S-RIGHT,下,10,,,
