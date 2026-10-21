@@ -256,4 +256,61 @@ fig.tight_layout(pad=0.3)
 fig.savefig(os.path.join(FIG, "fig9_pose.png"), facecolor="white")
 plt.close(fig)
 
+
+
+# ============================================================ 6) 一次过板读全 6 台的概率（R2 选型判据）
+# 现场目标：箱子一次通过读取窗口 T 秒，窗口内 6 个整机标签全部被读到。
+# 模型：每个标签在窗口内被盘存 n = 读取率*T/6 次，单次成功概率 p_i（同上），
+#       P(读全 6) = Π_i [ 1 - (1-p_i)^n ]
+WINDOWS = [0.3, 0.5, 1.0, 2.0]
+rows_f = []
+for vendor, gain in [(v, g) for v in ("A-Impinj体系", "B-国产方案") for g in (9, 6)]:
+    for dcm in (10, 20, 30, 50):
+        r0 = rssi(dcm / 100.0, gain, vendor, "B-BOTTOM")
+        ps = [p_read(r0 + o) for o in TAG_OFFSETS]
+        mean_cnt = sum(ps)
+        rate = MODEL["rate_base"] * (mean_cnt / 6.0) * (1.15 if vendor.startswith("A") else 0.90)
+        rec = {"厂家": vendor, "天线增益_dBi": gain, "距离_cm": dcm,
+               "均读全_6": round(mean_cnt, 2), "读取率_tags_s": round(rate, 1)}
+        for T in WINDOWS:
+            n = max(rate * T / 6.0, 1.0)
+            pall = 1.0
+            for pi in ps:
+                pall *= 1 - (1 - pi) ** n
+            rec[f"过板读全概率_{T}s_%"] = round(100 * pall, 1)
+        rows_f.append(rec)
+with open(os.path.join(SIM, "F_过板读全概率.csv"), "w", newline="", encoding="utf-8-sig") as f:
+    w = csv.DictWriter(f, fieldnames=list(rows_f[0])); w.writeheader(); w.writerows(rows_f)
+
+# 设计规则：0.5 s 窗口、每标签至少 2 次机会 ⇒ 整机读取率 ≥ 6*2/0.5 = 24 tags/s
+NEED_RATE = 6 * 2 / 0.5
+print("F 过板读全（0.5 s @20 cm）:",
+      {(r["厂家"][:2], r["天线增益_dBi"]): r["过板读全概率_0.5s_%"] for r in rows_f if r["距离_cm"] == 20})
+print("设计规则：0.5 s 窗口需 ≥", NEED_RATE, "tags/s")
+
+# 图：0.5 s 过板读全概率 vs 距离
+fig, ax = plt.subplots(figsize=(6.4, 3.0), dpi=220)
+style_map = {("A-Impinj体系", 9): (ACCENT, "-", "o"), ("B-国产方案", 9): ("#8C8C8C", "--", "^"),
+             ("A-Impinj体系", 6): (ACCENT_2, "-.", "s"), ("B-国产方案", 6): ("#C9C9C9", ":", "v")}
+for key, (c, ls, mk) in style_map.items():
+    pts = [(r["距离_cm"], r["过板读全概率_0.5s_%"]) for r in rows_f
+           if (r["厂家"], r["天线增益_dBi"]) == key]
+    pts.sort()
+    ax.plot([p[0] for p in pts], [p[1] for p in pts], ls, color=c, marker=mk, ms=5, lw=1.8,
+            label=f"{key[0][:2]}厂 {key[1]} dBi")
+ax.axhline(95, color="#B0B0B0", lw=0.9, ls=(0, (4, 3)))
+ax.text(48, 88, "95% 门槛", fontsize=8, color=GRAY, ha="right")
+ax.set_xlabel("读码器到箱面距离（cm）", fontsize=9.5, color=INK)
+ax.set_ylabel("0.5 s 窗口读全 6 台的概率（%）", fontsize=9.5, color=INK)
+ax.set_ylim(0, 105); ax.set_xlim(5, 52)
+ax.set_xticks([10, 20, 30, 50])
+for sp in ("top", "right"):
+    ax.spines[sp].set_visible(False)
+ax.grid(axis="y", color="#ECECEC", lw=0.8); ax.set_axisbelow(True)
+ax.legend(frameon=False, fontsize=8, ncol=2, loc="lower left")
+ax.tick_params(colors=INK, labelsize=9, length=0)
+fig.tight_layout(pad=0.3)
+fig.savefig(os.path.join(FIG, "fig12_pass_window.png"), facecolor="white")
+plt.close(fig)
+
 print("figs done")
