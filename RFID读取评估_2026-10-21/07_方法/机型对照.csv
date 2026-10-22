@@ -1,0 +1,10 @@
+hq_code,customer_code,customer_alias_in_mes,size_category,on_this_line_31d,note
+AX6727,Sangria/Seabreeze,SANGRIA,7 inch e-reader,yes,MES 配置名写作 ASSY,DEVICE,BASE,BW,GREEN,SANGRIA
+AX7907,Prosecco/Marsala,Prosexxx / Marsala,6 inch e-reader,yes,日志里 Prosexxx 为脱敏写法
+AX8252,Amaro/Julep,Amaxxx / Julxxx,7 inch e-reader,yes,金属、塑料背壳两种都在产
+AX7771,Roselite,-,8 inch tablet,no,10-21 日志出现 498 次配方但无独立 MODEL 行，待现场确认
+AX7513,Turquoise,-,11 inch tablet,no,-
+AX7520,Spinel,-,12 inch tablet,no,-
+TS8265A,Poplar,-,TWS,no,-
+SS8633A,Miramar,-,Echo,no,-
+SS8972A,Torte,-,Echo,no,-

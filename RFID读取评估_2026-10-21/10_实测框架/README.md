@@ -14,14 +14,14 @@
 
 ## 1. 项目代号（报告/表格/现场记录统一用）
 
-| 代号 | 箱型 | 背壳 |
-|---|---|---|
-| `KD-SP` | 小 Kinder | 塑料 |
-| `KD-LP` | 大 Kinder | 塑料 |
-| `KD-SM` | 小 Kinder | 金属 |
-| `KD-LM` | 大 Kinder | 金属 |
-| `PT-SM` | 小平板 | 金属 |
-| `PT-LM` | 大平板 | 金属 |
+| 代号 | HQ代码 | 客户代码 | 尺寸 / 品类 | 背壳 |
+|---|---|---|---|---|
+| `7907-P` | AX7907 | Prosecco/Marsala | 6 inch e-reader | 塑料 |
+| `8252-P` | AX8252 | Amaro/Julep | 7 inch e-reader | 塑料 |
+| `7907-M` | AX7907 | Prosecco/Marsala | 6 inch e-reader | 金属 |
+| `8252-M` | AX8252 | Amaro/Julep | 7 inch e-reader | 金属 |
+| `7771-M` | AX7771 | Roselite | 8 inch tablet | 金属 |
+| `7513-M` | AX7513 | Turquoise | 11 inch tablet | 金属 |
 
 ## 1.1 A 表的六种"朝下面"（读码器不动）
 
@@ -68,8 +68,11 @@ python apply_measured.py
 #    → figs/fig7m_distance_measured.png、fig8m_vendor_measured.png、fig11m_variants_measured.png
 #    → 09_报告/实测汇总.md（含每档「读全/可用/临界/不可用」判定）
 
-# 2) 出幻灯片（PPT 里的图仍是预测版；实测版单独出，别把预测图当实测）
-python make_ppt2.py
+# 2) 出幻灯片：先 8 页，再由 make_ppt3.py 追加 P9/P10（现网基线 + 机型口径）并把页脚改成 /10
+python make_ppt2.py && python make_ppt3.py
+
+# 3) 导 PDF（本机 PowerShell COM 绑不上，用 VBScript：见 09_报告/_build/render_deck.vbs）
+cscript //nologo render_deck.vbs
 ```
 
 > **不要**把填好的 CSV 覆盖到 `_sim/`：`sim_model.py` 是**生成器**，一跑就把 `_sim/*.csv` 重新写回预测值，
