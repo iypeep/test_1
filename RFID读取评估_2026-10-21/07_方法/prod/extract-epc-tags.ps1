@@ -22,7 +22,7 @@ $resident = @{
 $dirs = @(Get-ChildItem $logRoot -Directory | Where-Object { $_.Name -ge $From -and $_.Name -le $To } | Sort-Object Name)
 "days=" + $dirs.Count
 $lines = New-Object System.Collections.Generic.List[string]
-$lines.Add("day`tt`tepc`tascii`tantenna`trssi")
+$lines.Add("day`tt`tepc`tascii`tkind`trssi")
 $perDay = @{}
 
 foreach ($d in $dirs) {
