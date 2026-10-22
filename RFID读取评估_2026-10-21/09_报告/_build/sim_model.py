@@ -13,8 +13,9 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from matplotlib import font_manager as fm
 
-ROOT = r"E:\Desktop\RFID读取评估_2026-10-21"
-REP = os.path.join(ROOT, "09_报告")
+_HERE = os.path.dirname(os.path.abspath(__file__))
+REP = os.path.dirname(_HERE)
+ROOT = os.path.dirname(REP)
 SIM = os.path.join(REP, "_sim")
 TPL = os.path.join(ROOT, "10_实测框架")
 FIG = os.path.join(REP, "figs")

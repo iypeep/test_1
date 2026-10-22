@@ -3,8 +3,11 @@
 import os
 from PIL import Image, ImageDraw, ImageFont
 
-HW = r"E:\Desktop\RFID读取评估_2026-10-21\09_报告\figs\hw"
-FIG = r"E:\Desktop\RFID读取评估_2026-10-21\09_报告\figs"
+_HERE = os.path.dirname(os.path.abspath(__file__))
+REP = os.path.dirname(_HERE)
+FIG = os.path.join(REP, "figs")
+HW = os.path.join(FIG, "hw")
+
 INK, GRAY, LINE, ACCENT = "#1A1A1A", "#8C8C8C", "#D9D9D9", "#3E5DA8"
 f = lambda sz, b=False: ImageFont.truetype(r"C:\Windows\Fonts\msyhbd.ttc" if b else r"C:\Windows\Fonts\msyh.ttc", sz)
 

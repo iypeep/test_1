@@ -3,8 +3,10 @@
 import os
 from PIL import Image, ImageDraw, ImageFont
 
-SRC = r"C:\Users\TBZ\AppData\Local\hermes\cache\scratch\3d\out"
-FIG = r"E:\Desktop\RFID读取评估_2026-10-21\09_报告\figs"
+_HERE = os.path.dirname(os.path.abspath(__file__))
+SRC = os.path.join(_HERE, "_3d_out")
+REP = os.path.dirname(_HERE)
+FIG = os.path.join(REP, "figs")
 os.makedirs(FIG, exist_ok=True)
 
 INK, GRAY, ACCENT, LINE = "#1A1A1A", "#8C8C8C", "#3E5DA8", "#D9D9D9"

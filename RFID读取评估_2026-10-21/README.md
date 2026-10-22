@@ -61,6 +61,27 @@ python 09_报告/_build/make_ppt2.py
 python 09_报告/_build/apply_measured.py
 ```
 
+## 换机继续工作（另一台电脑）
+
+```bash
+git clone https://github.com/iypeep/test_1.git
+cd "test_1/RFID读取评估_2026-10-21"
+pip install -r 09_报告/_build/requirements.txt
+```
+
+| 想做什么 | 命令 | 说明 |
+|---|---|---|
+| 只改内容（文字 / 数字 / 配色） | `python 09_报告/_build/sim_model.py` → `python 09_报告/_build/make_ppt2.py` | 覆盖 `_sim/`、`figs/`、`09_报告/*.pptx` |
+| 重渲 3D | `blender --background --factory-startup --python 09_报告/_build/rfid3d.py` → `python 09_报告/_build/compose_3d.py` | 输出到 `_build/_3d_out/`；**仓库已带 13 帧成品，不装 Blender 也能直接拼图** |
+| 导 PDF / 逐页 PNG 核对 | `python 09_报告/_build/render_ppt.py` | 走本机 PowerPoint COM（Windows + Office） |
+| 实测数据替换 | 填 `10_实测框架/*.csv` → `python 09_报告/_build/apply_measured.py` | 出 `fig7m/fig8m/fig11m` + `实测汇总.md` |
+
+- **所有脚本的路径都相对脚本自身**（`_HERE / REP / ROOT`），换机不需要改任何绝对路径。
+- Blender 4.3 建议用绝对路径调用（如 `"C:/Program Files/Blender Foundation/Blender 4.3/blender.exe"`）；
+  `--factory-startup` 可避免插件干扰。
+- 只装 pip 依赖、不装 PowerPoint 也能改内容出 PPTX，只有导 PDF/PNG 那一步需要 Office。
+- 仓库不含 `08_对话记录/session_20261021.jsonl`（原始会话记录，含内部环境细节），本地另存。
+
 ## 注意
 
 - 原先此目录只有一个 `RFID读取评估_2026-10-21.7z` 包；现已展开为可浏览的文件树，**旧 7z 已移除**

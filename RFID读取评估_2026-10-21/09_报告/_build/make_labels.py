@@ -3,7 +3,7 @@
 import os, random
 from PIL import Image, ImageDraw, ImageFont
 
-OUT = r"C:\Users\TBZ\AppData\Local\hermes\cache\scratch\3d\labels"
+OUT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "_3d_labels")
 os.makedirs(OUT, exist_ok=True)
 F = r"C:\Windows\Fonts\msyh.ttc"
 FB = r"C:\Windows\Fonts\msyhbd.ttc"

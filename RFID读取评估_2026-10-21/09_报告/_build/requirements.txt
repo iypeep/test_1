@@ -1,0 +1,13 @@
+# RFID 读取能力评估 —— 生成脚本依赖
+# 装法：pip install -r requirements.txt
+# 仅 Windows 需要 pywin32（用于调用本机 PowerPoint 导出 PDF / 逐页 PNG 核对）
+
+python-pptx>=1.0.2
+matplotlib>=3.8
+Pillow>=10.0
+pymupdf>=1.24          # 只用于从 datasheet PDF 里提取产品图 / 文字，日常重跑可不装
+pywin32>=306 ; sys_platform == "win32"
+
+# 另外需要（非 pip）：
+#   Blender 4.3（跑 rfid3d.py 出 3D 渲染；不重渲 3D 的话可以不装，_3d_out/ 里已有成品帧）
+#   PowerPoint（2016 及以上，仅用于导出 PDF / PNG 核对）

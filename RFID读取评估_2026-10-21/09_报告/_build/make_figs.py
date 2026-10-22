@@ -8,8 +8,10 @@ from matplotlib import font_manager as fm
 from matplotlib.patches import Rectangle, FancyArrowPatch, FancyBboxPatch
 
 BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))  # 09_报告 的上一级
-ROOT = r"E:\Desktop\RFID读取评估_2026-10-21"
-OUT = os.path.join(ROOT, "09_报告", "figs")
+_HERE = os.path.dirname(os.path.abspath(__file__))
+REP = os.path.dirname(_HERE)
+ROOT = os.path.dirname(REP)
+OUT = os.path.join(REP, "figs")
 os.makedirs(OUT, exist_ok=True)
 
 INK, GRAY, LIGHT, BAR = "#1A1A1A", "#8C8C8C", "#BFBFBF", "#C9C9C9"

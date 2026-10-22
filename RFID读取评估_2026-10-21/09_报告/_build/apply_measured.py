@@ -11,9 +11,10 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from matplotlib import font_manager as fm
 
-ROOT = r"E:\Desktop\RFID读取评估_2026-10-21"
+_HERE = os.path.dirname(os.path.abspath(__file__))
+REP = os.path.dirname(_HERE)
+ROOT = os.path.dirname(REP)
 TPL = os.path.join(ROOT, "10_实测框架")
-REP = os.path.join(ROOT, "09_报告")
 FIG = os.path.join(REP, "figs")
 INK, GRAY, BAR, ACCENT, ACCENT_L = "#1A1A1A", "#8C8C8C", "#C9C9C9", "#3E5DA8", "#5C7ED4"
 fm.fontManager.addfont(r"C:\Windows\Fonts\msyh.ttc")

@@ -1,0 +1,8 @@
+# 渲染核对与临时产物
+_render/
+_render2/
+__pycache__/
+*.pyc
+# Blender 单帧渲染与贴纸：体积小、已入库（便于无 Blender 的机器直接拼图），如需瘦身可取消注释
+# _3d_out/
+# _3d_labels/

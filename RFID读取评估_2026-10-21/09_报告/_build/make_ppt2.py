@@ -9,9 +9,11 @@ from pptx.enum.text import PP_ALIGN, MSO_ANCHOR
 from pptx.oxml.ns import qn
 from lxml import etree
 
-ROOT = r"E:\Desktop\RFID读取评估_2026-10-21"
-FIG = os.path.join(ROOT, "09_报告", "figs")
-OUT = os.path.join(ROOT, "09_报告", "RFID读取能力评估_2026-10-22.pptx")
+_HERE = os.path.dirname(os.path.abspath(__file__))
+REP = os.path.dirname(_HERE)
+ROOT = os.path.dirname(REP)
+FIG = os.path.join(REP, "figs")
+OUT = os.path.join(REP, "RFID读取能力评估_2026-10-22.pptx")
 
 INK, GRAY, LINE = "1A1A1A", "8C8C8C", "D9D9D9"
 ACCENT, ACCENT_2, TINT = "3E5DA8", "5C7ED4", "E6EDF9"

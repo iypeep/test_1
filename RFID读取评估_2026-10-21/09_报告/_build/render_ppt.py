@@ -4,7 +4,8 @@ import os, sys, glob
 import win32com.client
 
 PPTX = sys.argv[1] if len(sys.argv) > 1 else r"E:\Desktop\RFID读取评估_2026-10-21\09_报告\RFID读取能力评估_2026-10-21.pptx"
-OUTDIR = sys.argv[2] if len(sys.argv) > 2 else r"E:\Desktop\RFID读取评估_2026-10-21\09_报告\_render"
+_HERE = os.path.dirname(os.path.abspath(__file__))
+OUTDIR = sys.argv[2] if len(sys.argv) > 2 else os.path.join(os.path.dirname(_HERE), "_render")
 
 os.makedirs(OUTDIR, exist_ok=True)
 for f in set(glob.glob(os.path.join(OUTDIR, "*.PNG")) + glob.glob(os.path.join(OUTDIR, "*.png"))):

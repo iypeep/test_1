@@ -6,8 +6,9 @@ FRONT 面在 -Y，BACK 面在 +Y，TOP 在 +Z，BOTTOM 在 -Z
 import bpy, math, os, time
 from mathutils import Vector
 
-OUT = r"C:\Users\TBZ\AppData\Local\hermes\cache\scratch\3d\out"
-LBL = r"C:\Users\TBZ\AppData\Local\hermes\cache\scratch\3d\labels"
+_HERE = os.path.dirname(os.path.abspath(__file__))
+OUT = os.path.join(_HERE, "_3d_out")
+LBL = os.path.join(_HERE, "_3d_labels")
 os.makedirs(OUT, exist_ok=True)
 
 L, Wd, H = 0.60, 0.40, 0.30          # 箱体 长 × 宽 × 高
