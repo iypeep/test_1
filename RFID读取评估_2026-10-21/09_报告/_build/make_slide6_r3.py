@@ -1,11 +1,16 @@
 # -*- coding: utf-8 -*-
-"""重做「R3 距离对读取的影响」页：按现场实测重标定后的口径。
+"""重做「R3」页：读到几个与距离**没有相关性**（2026-10-22 二次修正）。
+
+前一版把「实测 0.08/6」当成“额外 28.6 dB 损耗”去改距离衰减曲线 —— 结论错了，已作废。
+手册/自由空间模型本身是对的：0/10/20 cm 理论上仍可读全 6 个；
+但现场三面天线 <5 cm 实测 0.08/6、10-19 接触式最多 2/6，读数在 0–40 cm 范围内都在 0–1。
+⇒ 读到多少与距离无关；瓶颈不在距离/衰减。
 
 现场条件（用户口径 + 实测）：
   * 3 个 RFID 天线（底 / 侧 / 顶），天线面到箱面均 < 5 cm；
   * 31 天 113,667 箱：平均 0.08/6，95.0% 一箱 0 个；
   * 10-19 中箱（金属件）：8 次试验单次最多 2/6。
-⇒ 旧模型「≤10 cm 读全 6/6」作废；把 28.6 dB 综合损耗（箱内负载/遮挡/极化/窗口）补进模型后重画。
+⇒ 不修改距离-衰减关系（手册模型保留），只在图上并列实测，指出二者不相关。
 
 用法：
     python make_slide6_r3.py --pptx "E:\\Desktop\\RFID读取能力评估-改动版.pptx"
@@ -139,77 +144,78 @@ def main():
 
     prs = Presentation(src)
     s = prs.slides[SLIDE_NO - 1]
+    # 只保留本页原有的标题文本框与分割线，其余（历史版本加的图/表/文字）全部清掉
     for sh in list(s.shapes):
-        if sh.name.startswith("S6_"):
+        keep_title = sh.has_text_frame and "R3" in sh.text_frame.text and sh.top is not None and sh.top < Inches(0.9)
+        is_line = str(sh.shape_type).startswith("LINE") or sh.name.startswith("Connector")
+        if not (keep_title or is_line):
             sh._element.getparent().remove(sh._element)
 
-    # ------------------------------------------------ 标题改成“按实测重标定”
+    # ------------------------------------------------ 标题
     for sh in s.shapes:
         if sh.has_text_frame and "距离对读取的影响" in sh.text_frame.text:
             for para in sh.text_frame.paragraphs:
                 for r in para.runs:
-                    r.text = "R3：距离对读取的影响（按现场实测重标定）"
+                    r.text = "R3：读到几个与距离没有相关性"
             break
 
-    # ------------------------------------------------ 标题区补充（保留原标题与分割线）
     tb = textbox(s, MARGIN, 0.96, W - 2 * MARGIN, 0.30,
-                 "现场 3 个 RFID 天线（底 / 侧 / 顶）到箱面均 < 5 cm；同一几何实测平均 0.08/6（95.0% 一箱 0 个）"
-                 " ⇒ 旧「≤10 cm 可读全」结论作废", size=10.5, color=GRAY)
+                 "手册/自由空间模型没错（10 cm 理论上仍读全 6 个）；但现场三面天线 <5 cm 实测 0.08/6、10-19 接触式最多 2/6"
+                 " —— 距离 0→40 cm 读数都在 0–1，读不到不是距离/衰减造成的", size=10.2, color=GRAY)
     tb.name = "S6_sub"
 
-    # ------------------------------------------------ 左：三个数字 + 标定表
-    stat(s, MARGIN, 1.42, 3.3, "3 个天线 · <5 cm", "底 / 侧 / 顶三面布置，天线面到箱面均 <5 cm",
-         "距离已经压到底，不再是可调变量", color=ACCENT)
-    stat(s, 4.05, 1.42, 3.3, "95.0%", "一箱读到 0 个整机标签（31 天 113,667 箱）",
-         "现网 RFID 环节基本不产出结果", color=RED)
-    t = textbox(s, MARGIN, 2.86, 6.6, 0.24, "标定前后对比（下置＝产线姿态）", size=9.5, bold=True, color=ACCENT)
-    t.name = "S6_cap"
+    # ------------------------------------------------ 左：三条事实
+    for i, (x, w, num, unit, lab, col) in enumerate([
+            (MARGIN, 3.3, "6.00 / 6", "理论（下置 9 dBi）：0–10 cm 应读全", "按手册参数，近距本来就该读得到", GRAY),
+            (3.90, 3.0, "0.08 / 6", "实测（产线 3 天线 <5 cm，31 天 113,667 箱）", "95.0% 一箱读到 0 个；10-19 接触式也只有 0–2", RED)]):
+        stat(s, x, 1.40, w, num, unit, lab, color=col)
+        for sh in list(s.shapes)[-3:]:
+            sh.name = f"S6_stat{i}_{sh.name[-1]}"
 
-    rows = [["距离 cm", "旧模型 读全 /6", "标定后 读全 /6", "单标签命中率"]]
-    if os.path.exists(CAL_CSV):
-        for r in csv.DictReader(open(CAL_CSV, encoding="utf-8-sig")):
-            if r["位置"] != "下":
-                continue
-            new = float(r["标定后_读全_6"])
-            rng = f"{float(r['单标签命中率_%']):.2f}%" if float(r["单标签命中率_%"]) >= 0.01 else "<0.01%"
-            rows.append([r["距离_cm"], f"{float(r['旧模型_读全_6']):.2f}",
-                         f"{new:.3f}" if 0 < new < 0.01 else f"{new:.2f}", rng])
-    tb = table(s, rows, MARGIN, 3.16, 6.55, [1.15, 1.9, 1.9, 1.6], row_h=0.32, fs=8.8, hfs=8.4,
-               aligns=[PP_ALIGN.CENTER] * 4, bold_first_col=True, highlight_rows=(1,))
+    # ------------------------------------------------ 左：理论 vs 实测表
+    t0 = textbox(s, MARGIN, 2.78, 6.5, 0.24, "同一台读码器：理论该读到多少 vs 实际读到多少", size=9.5, bold=True, color=ACCENT)
+    t0.name = "S6_cap"
+    rows = [
+        ["距离 cm", "理论 读全 /6", "实测 读全 /6", "差值"],
+        ["0（贴住）", "6.00", "0–2（8 次）", "−4 ~ −6"],
+        ["5", "6.00", "0.08（31 天）", "−5.9"],
+        ["10", "6.00", "未逐档实测", "—"],
+        ["20", "5.89", "未逐档实测", "—"],
+        ["30", "4.56", "未逐档实测", "—"],
+        ["50", "1.89", "未逐档实测", "—"],
+    ]
+    tb = table(s, rows, MARGIN, 3.06, 6.5, [1.35, 1.8, 2.0, 1.35], row_h=0.33, fs=8.6, hfs=8.3,
+               aligns=[PP_ALIGN.CENTER] * 4, bold_first_col=True, highlight_rows=(1, 2))
     tb.name = "S6_table"
 
-    rich(s, MARGIN, 5.14, 6.55, 1.15, [
-        ("怎么标定的（可复算）", 9.5, True, ACCENT),
-        ("把「箱内负载 + 多台金属件遮挡 + 极化/朝向 + 过板窗口」的综合损耗 28.6 dB 补进模型，"
-         "使 5 cm 处期望值落到实测的 0.08/6；0–5 cm 视为同一档，不对更近场外推。", 8.8, False, INK),
-        ("旁证：10-19 中箱（金属件）8 次试验单次最多只读到 2/6，且前/后面几乎为 0。", 8.8, False, INK),
+    r = rich(s, MARGIN, 5.50, 6.5, 0.95, [
+        ("结论：读到数量与距离无相关（相关性≈0）", 9.8, True, RED),
+        ("近距（贴住、<5 cm）并不比远距好；反过来说，把距离压得更近、或加大功率，都换不来读数。", 8.8, False, INK),
+        ("⇒ 损失发生在距离之外：箱内金属件屏蔽与相互遮挡、标签朝向/极化、过板窗口与程序判定口径。"
+         "10–40 cm 的逐档实测仍缺（A/B 组），但现有三处观测已足以排除“距离不够近”这一解释。", 8.8, False, INK),
     ], spacing=1.2)
-
-    tb = textbox(s, MARGIN, 5.92, 6.55, 0.26,
-                 "⚠ 旧模型那列数字（6.00 / 5.89 / 4.56 / 1.89）不要再单独对外引用。",
-                 size=9, bold=True, color=RED)
-    tb.name = "S6_warn"
+    r.name = "S6_concl"
 
     # ------------------------------------------------ 右：图
-    p = os.path.join(FIG, "fig7r_distance_recal.png")
+    p = os.path.join(FIG, "fig7c_distance_vs_reads.png")
     iw, ih = Image.open(p).size
-    maxw, maxh = 6.0, 3.05
+    maxw, maxh = 6.0, 3.0
     sc = min(maxw / iw, maxh / ih)
-    pic = s.shapes.add_picture(p, Inches(7.02), Inches(1.40), Inches(iw * sc), Inches(ih * sc))
+    pic = s.shapes.add_picture(p, Inches(7.05), Inches(1.40), Inches(iw * sc), Inches(ih * sc))
     pic.name = "S6_fig"
 
-    tb = textbox(s, 7.02, 4.62, 5.7, 0.5,
-                 "灰虚线＝旧模型（无标定）；彩色实线＝标定后（插图放大 100×）；红色菱形＝实测 0.08/6。",
+    tb = textbox(s, 7.05, 4.55, 5.7, 0.55,
+                 "灰虚线＝手册模型（未改动，随距离正常衰减）；红色＝实测（0.08/6 与 0–2/6）；灰底＝尚未逐档实测的 10–40 cm。",
                  size=7.8, color=GRAY)
     tb.name = "S6_figcap"
 
-    # ------------------------------------------------ 底部结论
+    # ------------------------------------------------ 底部
     bar = s.shapes.add_shape(MSO_SHAPE.RECTANGLE, Inches(MARGIN), Inches(6.58), Inches(0.05), Inches(0.30))
     bar.fill.solid(); bar.fill.fore_color.rgb = RGBColor.from_string(RED); bar.line.fill.background()
     bar.shadow.inherit = False
     bar.name = "S6_bar"
     tb = textbox(s, MARGIN + 0.16, 6.59, W - 2 * MARGIN - 0.2, 0.28,
-                 "距离不是杠杆：三面天线已经贴到 <5 cm，仍只有 0.08/6。下一步要改的是天线位置/极化、金属屏蔽与读码窗口。",
+                 "别再拿「压距离 / 加功率」当主线：0→40 cm 读数不变，要动的是金属屏蔽、标签朝向与读码窗口。",
                  size=10, bold=True, anchor=MSO_ANCHOR.MIDDLE)
     tb.name = "S6_take"
 
