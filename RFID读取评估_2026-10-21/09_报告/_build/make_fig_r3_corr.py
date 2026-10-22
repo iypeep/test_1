@@ -54,9 +54,9 @@ def main():
 
     fig, ax = plt.subplots(figsize=(7.4, 3.55), dpi=220)
 
-    # 10–40 cm：无逐档实测
-    ax.axvspan(10, 40, color="#F4F4F4", zorder=0)
-    ax.text(25, 5.95, "10–40 cm：尚未逐档实测\n（A/B 组待取数）", fontsize=8, color=GRAY, ha="center", va="top")
+    # 10–50 cm：无逐档实测
+    ax.axvspan(10, 50, color="#F4F4F4", zorder=0)
+    ax.text(30, 5.95, "10–50 cm：尚未逐档实测\n（A/B 组待取数）", fontsize=8, color=GRAY, ha="center", va="top")
 
     ax.plot(d, y_theory, ls=(0, (5, 3)), lw=1.6, color=LIGHT, marker="o", ms=4, zorder=2,
             label="理论（手册/自由空间模型，未改动）")
@@ -70,7 +70,7 @@ def main():
                     arrowprops=dict(arrowstyle="-", color=RED, lw=0.8),
                     va="bottom", zorder=5)
 
-    ax.text(30, 0.55, "实测：无论贴多近，都在 0–1 个之间 —— 与距离无关", fontsize=9, color=RED, fontweight="bold")
+    ax.text(30, 0.55, "实测：无论贴多近，都在 0–2 个之间 —— 与距离无关", fontsize=9, color=RED, fontweight="bold")
 
     ax.set_xlim(-2, 52)
     ax.set_ylim(0, 6.6)

@@ -3,7 +3,7 @@
 
 前一版把「实测 0.08/6」当成“额外 28.6 dB 损耗”去改距离衰减曲线 —— 结论错了，已作废。
 手册/自由空间模型本身是对的：0/10/20 cm 理论上仍可读全 6 个；
-但现场三面天线 <5 cm 实测 0.08/6、10-19 接触式最多 2/6，读数在 0–40 cm 范围内都在 0–1。
+但现场三面天线 <5 cm 实测 0.08/6、10-19 中箱接触式最多 2/6，读数在 0–20 cm 范围内都在 0–2。
 ⇒ 读到多少与距离无关；瓶颈不在距离/衰减。
 
 现场条件（用户口径 + 实测）：
@@ -136,6 +136,8 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--pptx", required=True)
     ap.add_argument("--out", default="")
+    ap.add_argument("--slide-no", type=int, default=SLIDE_NO,
+                    help="目标页序号（1-based）。注意：不同底稿页序不同（本仓库底稿 R3 是第 5 页，改动版是第 6 页）")
     a = ap.parse_args()
     src, out = a.pptx, (a.out or a.pptx)
     if out == src:
@@ -143,7 +145,7 @@ def main():
         shutil.copy2(src, bak); print("backup:", bak)
 
     prs = Presentation(src)
-    s = prs.slides[SLIDE_NO - 1]
+    s = prs.slides[a.slide_no - 1]
     # 只保留本页原有的标题文本框与分割线，其余（历史版本加的图/表/文字）全部清掉
     for sh in list(s.shapes):
         keep_title = sh.has_text_frame and "R3" in sh.text_frame.text and sh.top is not None and sh.top < Inches(0.9)
@@ -160,14 +162,14 @@ def main():
             break
 
     tb = textbox(s, MARGIN, 0.96, W - 2 * MARGIN, 0.30,
-                 "手册/自由空间模型没错（10 cm 理论上仍读全 6 个）；但现场三面天线 <5 cm 实测 0.08/6、10-19 接触式最多 2/6"
-                 " —— 距离 0→40 cm 读数都在 0–1，读不到不是距离/衰减造成的", size=10.2, color=GRAY)
+                 "手册/自由空间模型没错（10 cm 理论上仍读全 6 个）；但现场三面天线 <5 cm 实测 0.08/6、10-19 中箱接触式最多 2/6"
+                 " —— 距离 0→20 cm 读数都在 0–2，读不到不是距离/衰减造成的", size=10.2, color=GRAY)
     tb.name = "S6_sub"
 
     # ------------------------------------------------ 左：三条事实
     for i, (x, w, num, unit, lab, col) in enumerate([
             (MARGIN, 3.3, "6.00 / 6", "理论（下置 9 dBi）：0–10 cm 应读全", "按手册参数，近距本来就该读得到", GRAY),
-            (3.90, 3.0, "0.08 / 6", "实测（产线 3 天线 <5 cm，31 天 113,667 箱）", "95.0% 一箱读到 0 个；10-19 接触式也只有 0–2", RED)]):
+            (3.90, 3.0, "0.08 / 6", "实测（产线 3 天线 <5 cm，31 天 113,667 箱）", "95.0% 一箱读到 0 个；10-19 中箱接触式也只有 0–2", RED)]):
         stat(s, x, 1.40, w, num, unit, lab, color=col)
         for sh in list(s.shapes)[-3:]:
             sh.name = f"S6_stat{i}_{sh.name[-1]}"
@@ -177,8 +179,8 @@ def main():
     t0.name = "S6_cap"
     rows = [
         ["距离 cm", "理论 读全 /6", "实测 读全 /6", "差值"],
-        ["0（贴住）", "6.00", "0–2（8 次）", "−4 ~ −6"],
-        ["5", "6.00", "0.08（31 天）", "−5.9"],
+        ["接触式（10-19 中箱）", "6.00", "0–2（8 次）", "−4 ~ −6"],
+        ["<5（产线贴装）", "6.00", "0.08（31 天）", "−5.9"],
         ["10", "6.00", "未逐档实测", "—"],
         ["20", "5.89", "未逐档实测", "—"],
         ["30", "4.56", "未逐档实测", "—"],
@@ -192,7 +194,7 @@ def main():
         ("结论：读到数量与距离无相关（相关性≈0）", 9.8, True, RED),
         ("近距（贴住、<5 cm）并不比远距好；反过来说，把距离压得更近、或加大功率，都换不来读数。", 8.8, False, INK),
         ("⇒ 损失发生在距离之外：箱内金属件屏蔽与相互遮挡、标签朝向/极化、过板窗口与程序判定口径。"
-         "10–40 cm 的逐档实测仍缺（A/B 组），但现有三处观测已足以排除“距离不够近”这一解释。", 8.8, False, INK),
+         "10–50 cm 的逐档实测仍缺（A/B 组），但现有三处观测已足以排除“距离不够近”这一解释。", 8.8, False, INK),
     ], spacing=1.2)
     r.name = "S6_concl"
 
@@ -205,7 +207,7 @@ def main():
     pic.name = "S6_fig"
 
     tb = textbox(s, 7.05, 4.55, 5.7, 0.55,
-                 "灰虚线＝手册模型（未改动，随距离正常衰减）；红色＝实测（0.08/6 与 0–2/6）；灰底＝尚未逐档实测的 10–40 cm。",
+                 "灰虚线＝手册模型（未改动，随距离正常衰减）；红色＝实测（0.08/6 与 0–2/6）；灰底＝尚未逐档实测的 10–50 cm。",
                  size=7.8, color=GRAY)
     tb.name = "S6_figcap"
 
@@ -215,7 +217,7 @@ def main():
     bar.shadow.inherit = False
     bar.name = "S6_bar"
     tb = textbox(s, MARGIN + 0.16, 6.59, W - 2 * MARGIN - 0.2, 0.28,
-                 "别再拿「压距离 / 加功率」当主线：0→40 cm 读数不变，要动的是金属屏蔽、标签朝向与读码窗口。",
+                 "别再拿「压距离 / 加功率」当主线：0→20 cm 读数不变，要动的是金属屏蔽、标签朝向与读码窗口。",
                  size=10, bold=True, anchor=MSO_ANCHOR.MIDDLE)
     tb.name = "S6_take"
 
