@@ -15,6 +15,7 @@
     python make_slide3_merge.py --pptx ... --samples-tsv <rfidboxes2.tsv> --sscc-tsv <sscc_model.tsv>
 """
 import os, csv, re, argparse, shutil, datetime
+from PIL import Image
 
 from pptx import Presentation
 from pptx.util import Inches, Pt
@@ -22,6 +23,10 @@ from pptx.dml.color import RGBColor
 from pptx.enum.text import PP_ALIGN, MSO_ANCHOR
 from pptx.oxml.ns import qn
 from lxml import etree
+
+_HERE = os.path.dirname(os.path.abspath(__file__))
+REP = os.path.dirname(_HERE)
+FIG_DIR = os.path.join(REP, "figs")
 
 INK, GRAY, LINE = "1A1A1A", "8C8C8C", "D9D9D9"
 ACCENT, TINT, RED = "3E5DA8", "E6EDF9", "C0504D"
@@ -41,7 +46,7 @@ BOX = {
                [0, 1, 0, 0, 0, 0]],   # 第4次：下=1
 }
 FACES = ["上", "下", "左", "右", "前", "后"]
-BOX_TITLE = "中箱读取测试（2026-10-19）· 实验对象：AX7907A 金属背板 Kinder（原报告称大/小平板）"
+BOX_TITLE = "中箱读取测试（2026-10-19）· AX7907A 金属背板 Kinder（原报告称大/小平板）\n表头＝朝下的那个面，颜色与左图一致"
 
 
 def set_font(run, size, bold=False, color=INK):
@@ -101,7 +106,7 @@ def _border(cell, color=LINE, pt=0.75):
 
 def table(slide, rows, x, y, w, col_w, row_h=0.3, fs=8.8, hfs=8.4,
           aligns=None, bold_first_col=False, header_fill="F2F2F2",
-          highlight_rows=(), highlight_fill="FBE9E7"):
+          highlight_rows=(), highlight_fill="FBE9E7", hdr_fills=None):
     nrow, ncol = len(rows), len(rows[0])
     shp = slide.shapes.add_table(nrow, ncol, Inches(x), Inches(y), Inches(w), Inches(row_h * nrow))
     tbl = shp.table
@@ -121,14 +126,19 @@ def table(slide, rows, x, y, w, col_w, row_h=0.3, fs=8.8, hfs=8.4,
             cell.margin_top = cell.margin_bottom = Inches(0.01)
             cell.vertical_anchor = MSO_ANCHOR.MIDDLE
             cell.fill.solid()
-            fill = header_fill if ri == 0 else (highlight_fill if ri in highlight_rows else "FFFFFF")
+            if ri == 0 and hdr_fills and ci in hdr_fills:
+                fill = hdr_fills[ci]
+            else:
+                fill = header_fill if ri == 0 else (highlight_fill if ri in highlight_rows else "FFFFFF")
             cell.fill.fore_color.rgb = RGBColor.from_string(fill)
             _border(cell)
             p = cell.text_frame.paragraphs[0]
             p.alignment = aligns[ci] if aligns else (PP_ALIGN.CENTER if ci else PP_ALIGN.LEFT)
             p.line_spacing = 1.0
             r = p.add_run(); r.text = str(rows[ri][ci])
-            set_font(r, hfs if ri == 0 else fs, (ri == 0) or (bold_first_col and ci == 0))
+            white = ri == 0 and hdr_fills and ci in hdr_fills
+            set_font(r, hfs if ri == 0 else fs, (ri == 0) or (bold_first_col and ci == 0),
+                     "FFFFFF" if white else INK)
     return shp
 
 
@@ -190,21 +200,35 @@ def main():
 
     # 清掉上一版脚本加的块（可重复执行）：按名字前缀识别
     for sh in list(s.shapes):
-        if sh.name.startswith("S3_"):
+        legacy_sub = sh.has_text_frame and "机台RFID布置方式" in sh.text_frame.text
+        if sh.name.startswith("S3_") or sh.name == "Picture 7" or legacy_sub:
             sh._element.getparent().remove(sh._element)
+
+    # ------------------------------------------------ 左上：六面 + 三面天线示意图（与右表列一一对应）
+    fp = os.path.join(FIG_DIR, "fig_faces_axes.png")
+    if os.path.exists(fp):
+        iw, ih = Image.open(fp).size
+        maxw, maxh = 6.15, 2.60
+        sc = min(maxw / iw, maxh / ih)
+        pic = s.shapes.add_picture(fp, Inches(MARGIN), Inches(1.40), Inches(iw * sc), Inches(ih * sc))
+        pic.name = "S3_fig"
+        note = textbox(s, MARGIN, 4.00, 6.15, 0.22,
+                       "测试时只换“哪个面朝下”贴到底部读取器；表头颜色＝图中面名。",
+                       size=7.6, color=GRAY)
+        note.name = "S3_fignote"
 
     # ------------------------------------------------ 左：readStatus=True 实测样例
     samples = load_samples(a.samples_tsv, a.sscc_tsv)
     if samples:
-        y = 4.02
+        y = 4.28
         tb = textbox(s, MARGIN, y, 6.3, 0.26, "实测样例：readStatus=True 的箱（10-22 机台日志，逐箱一条）", size=9.5, bold=True, color=ACCENT)
         tb.name = "S3_cap"
         rows = [["时间", "机型", "背壳", "读到个数", "耗时 s", "读到标签（SN 打码）"]] + samples
         t = table(s, rows, MARGIN, y + 0.30, 6.3, [0.85, 1.0, 0.8, 0.95, 0.8, 2.1],
-                  row_h=0.28, fs=8.2, hfs=8.0, bold_first_col=False,
+                  row_h=0.26, fs=8.0, hfs=7.8, bold_first_col=False,
                   aligns=[PP_ALIGN.CENTER, PP_ALIGN.CENTER, PP_ALIGN.CENTER, PP_ALIGN.CENTER, PP_ALIGN.CENTER, PP_ALIGN.LEFT])
         t.name = "S3_samples"
-        tb = textbox(s, MARGIN, y + 0.30 + 0.28 * (len(rows)) + 0.06, 6.3, 0.24,
+        tb = textbox(s, MARGIN, y + 0.30 + 0.26 * (len(rows)) + 0.05, 6.3, 0.22,
                      "口径：readStatus=True＝该箱 RFID 环节判定成功；读到 1 个标签即计入。SN 末段打码，数值未修改。",
                      size=7.8, color=GRAY)
         tb.name = "S3_note"
@@ -213,7 +237,7 @@ def main():
 
     # ------------------------------------------------ 右：中箱测试矩阵
     x, w = 7.15, 5.56
-    tb = textbox(s, x, 1.42, w, 0.28, BOX_TITLE, size=9.5, bold=True, color=INK)
+    tb = textbox(s, x, 1.30, w, 0.46, BOX_TITLE, size=9.0, bold=True, color=INK, spacing=1.15)
     tb.name = "S3_boxtitle"
 
     rows = [["朝下面", "上", "下", "左", "右", "前", "后"]]
@@ -226,10 +250,11 @@ def main():
     rows.append(["合计（8 次试验）"] + [str(v) if v else "0" for v in tot])
     rows.append(["目标（整箱）"] + ["6"] * 6)
 
-    t = table(s, rows, x, 1.74, w, [2.05, 0.58, 0.58, 0.58, 0.58, 0.58, 0.58],
-              row_h=0.34, fs=8.8, hfs=8.6, bold_first_col=True,
+    t = table(s, rows, x, 1.82, w, [2.05, 0.58, 0.58, 0.58, 0.58, 0.58, 0.58],
+              row_h=0.33, fs=8.6, hfs=8.4, bold_first_col=True,
               aligns=[PP_ALIGN.LEFT] + [PP_ALIGN.CENTER] * 6,
-              highlight_rows=(len(rows) - 1,), highlight_fill=TINT)
+              highlight_rows=(len(rows) - 1,), highlight_fill=TINT,
+              hdr_fills={1: "3E5DA8", 2: "2E8B57", 3: "C0504D", 4: "D98C1F", 5: "5C7ED4", 6: "9E9E9E"})
     t.name = "S3_boxtable"
 
     rich(s, x, 3.62, w, 2.05, [
