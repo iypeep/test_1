@@ -6,3 +6,6 @@ __pycache__/
 # Blender 单帧渲染与贴纸：体积小、已入库（便于无 Blender 的机器直接拼图），如需瘦身可取消注释
 # _3d_out/
 # _3d_labels/
+
+# 产线原始 TSV（可由 07_方法/prod/ 脚本再生，单日 15 MB 级，不入库）
+03_数据/remote/

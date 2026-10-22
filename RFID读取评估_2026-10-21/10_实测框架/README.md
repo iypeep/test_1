@@ -58,19 +58,24 @@
 ## 4. 填完之后
 
 ```bash
-# 1) 把填好的 CSV 覆盖到预测文件（同名）
-cp A_姿态.csv      ../09_报告/_sim/A_姿态_模拟.csv
-cp B_距离_9dBi.csv ../09_报告/_sim/B_距离_9dBi_模拟.csv
-cp C_厂家x增益.csv ../09_报告/_sim/C_厂家x增益_模拟.csv
-cp E_箱型.csv      ../09_报告/_sim/E_箱型_模拟.csv
+cd ../09_报告/_build
 
-# 2) 重出图（脚本当前读 _sim/*.csv；实测列名与模板一致时可直接复用）
-cd ../09_报告/_build && python sim_model.py
+# 0) 先体检：哪张表填了几行、硬件标识有没有漏、判定落在哪一档（不出图）
+python apply_measured.py --check
 
-# 3) 重出幻灯片
+# 1) 出实测图 + 汇总（边测边跑，空单元自动跳过）
+python apply_measured.py
+#    → figs/fig7m_distance_measured.png、fig8m_vendor_measured.png、fig11m_variants_measured.png
+#    → 09_报告/实测汇总.md（含每档「读全/可用/临界/不可用」判定）
+
+# 2) 出幻灯片（PPT 里的图仍是预测版；实测版单独出，别把预测图当实测）
 python make_ppt2.py
 ```
 
-> 注意：`sim_model.py` 现在是**生成器**（既算预测也导模板）。实测阶段把读取函数改成“读 CSV 画图”，
-> 或在 `_build/` 下加一个 `apply_measured.py`（读实测 CSV → 覆盖 `figs/fig7|8|11` → 再跑 `make_ppt2.py`）。
-> 需要我直接写这个 `apply_measured.py` 的话，明天数据一到就能一键出 V2。
+> **不要**把填好的 CSV 覆盖到 `_sim/`：`sim_model.py` 是**生成器**，一跑就把 `_sim/*.csv` 重新写回预测值，
+> 覆盖掉的实测数据收不回来（`_sim/` 是"模型假设的输出"，实测值只留在本目录与 `figs/fig*m`）。
+>
+> 判定口径（上表）已写进 `apply_measured.py` 的 `VERDICT` 常量；要改档位就改那一处，汇总表跟着变。
+>
+> 空跑校验：`python apply_measured.py --tpl <某目录> --out <图目录> --summary <汇总.md>`，
+> 可以拿一份填了假数据的副本先演练，不碰仓库里的图。
