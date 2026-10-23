@@ -1,0 +1,6 @@
+﻿hq_code,customer_code,size_category,shell,boxes,read_true_pct,boxes_0,boxes_1,boxes_2,boxes_3,boxes_4,boxes_5,boxes_6,le1_pct,le2_pct,le3_pct,le4_pct,le5_pct,full6_pct,avg_tags
+AX7907,Prosecco/Marsala,6 inch e-reader,未标注,54810,9.39,54308,471,25,5,1,0,0,99.94,99.99,100.0,100.0,100.0,0.0,0.01
+AX8252,Amaro/Julep,7 inch e-reader,塑料,15202,7.8,15033,145,18,4,0,0,2,99.84,99.96,99.99,99.99,99.99,0.01,0.01
+AX6727,Sangria/Seabreeze,7 inch e-reader,未标注,7170,7.87,2906,2884,779,102,204,143,152,80.75,91.62,93.04,95.89,97.88,2.12,1.0
+AX8252,Amaro/Julep,7 inch e-reader,金属,6524,8.72,6212,182,87,31,8,4,0,98.01,99.34,99.82,99.94,100.0,0.0,0.08
+合计,,,,83706,8.92,78459,3682,909,142,213,147,154,98.13,99.22,99.39,99.64,99.82,0.18,0.1
