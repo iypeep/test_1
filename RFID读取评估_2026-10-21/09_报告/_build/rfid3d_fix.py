@@ -226,7 +226,9 @@ def render(name):
     bpy.context.scene.render.filepath = os.path.join(OUT, name)
     t0 = time.time()
     bpy.ops.render.render(write_still=True)
-    print(f"[render] {name} {time.time()-t0:.1f}s", flush=True)
+    print(f"[render] {name}", flush=True)
+    bpy.ops.file.pack_all()
+    bpy.ops.wm.save_as_mainfile(filepath=os.path.join(OUT, name + ".blend"))
 
 
 def add_beam(face_pt, direction, length, r1=0.20, r2=0.075, color=ACCENT):

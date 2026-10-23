@@ -166,6 +166,8 @@ def main():
     bpy.context.scene.render.filepath = os.path.join(OUT, "R3_scan.png")
     bpy.ops.render.render(write_still=True)
     print("[render] R3_scan", flush=True)
+    bpy.ops.file.pack_all()
+    bpy.ops.wm.save_as_mainfile(filepath=os.path.join(OUT, "R3_scan.blend"))
 
 
 if __name__ == "__main__":

@@ -166,7 +166,9 @@ def setup(target, ortho, direction=(-0.18, -0.55, 0.82), res=(1200, 900)):
 def render(name):
     bpy.context.scene.render.filepath = os.path.join(OUT, name)
     bpy.ops.render.render(write_still=True)
-    print("[render]", name, flush=True)
+    print(f"[render] {name}", flush=True)
+    bpy.ops.file.pack_all()
+    bpy.ops.wm.save_as_mainfile(filepath=os.path.join(OUT, name + ".blend"))
 
 
 def main():
