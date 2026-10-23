@@ -41,7 +41,7 @@ LLRP 会话可用性（近 30 天 5 次停摆），其次是**标签离天线的
 | `09_报告/RFID读取能力评估_2026-10-22.md` | **当前版报告**（六项要求） |
 | `09_报告/RFID读取能力评估_2026-10-22.pptx` / `.pdf` | **9 页汇报版（以「改动版」为基线）**：P1 封面 · P2 六种放置方式(A1–A6) · **P3 读取方向测试**（3 天线布置 + 中箱实测表 + 表头↔P2 姿态映射）· P4 机型口径 · P5 R2 模组选型 · P6 R3 距离无相关 · P7 Back Up · P8 R4+R5 · P9 R6 箱型；含讲稿备注 |
 | `09_报告/RFID读取能力评估_2026-10-21.*` | 上一版（旧口径 R1–R5）：现状证据、日志盲区、停摆复盘 |
-| `09_报告/figs/` | fig1 30 天趋势 / fig2 天线命中 / fig3 箱面 / fig4 六种放置 3D / fig5 距离几何 3D / fig6 读码器阵容 3D / fig7 距离曲线 / fig8 增益·厂家 / fig9 姿态 / fig10 手册产品图 / fig11 六种箱型 / fig12 一次过板读全 6 台的概率 |
+| `09_报告/figs/` | fig1 30 天趋势 / fig2 天线命中 / fig3 箱面 / fig4 六种放置 3D / fig5 距离几何 3D / fig6 读码器阵容 3D / fig7 距离曲线 / fig8 增益·厂家 / fig9 姿态 / fig10 手册产品图 / fig11 六种箱型 / fig12 一次过板读全 6 台的概率 / fig13 现网逐箱读取分布 / **fig14 包装机型四象限（KKE/N-KKE × 背壳）** |
 | `09_报告/figs/hw/` | 厂家手册与产品页原图（RodinBell M-703 / Kathrein RRU 4000 / Silion SQM5100） |
 | `09_报告/_sim/` | 预测结果 CSV（A 姿态 / B 距离 / C 厂家增益 / E 箱型）+ `模型假设.json` + `D_手册参数与相对读距.csv` |
 | `09_报告/_build/` | 生成脚本：`rfid3d.py`+`make_labels.py`+`compose_3d.py`（Blender 3D）、`sim_model.py`（模型）、`make_ppt2.py`（幻灯片）、`apply_measured.py`（实测替换）、`render_ppt.py`（COM 导出 PNG 核对） |
@@ -49,6 +49,7 @@ LLRP 会话可用性（近 30 天 5 次停摆），其次是**标签离天线的
 | `11_进度与待办_20261022.md` | **进度快照（换机先看这份）**：已完成/待办、机型口径决定、复现命令 |
 | `03_数据/prod_readout_*.csv` `03_数据/model_baseline_*.csv` | 现网实测基线（31 天，95% 一箱读 0）与逐机型基线 |
 | `07_方法/prod/` `07_方法/机型对照.csv` | 逐箱取值脚本（`readStatus`×`EpcLog`）与 HQ代码×客户代码对照 |
+| **`07_方法/包装机型口径.md`** | **2026-10-23 经理口径：KKE / N-KKE × 背壳四象限、标签位置（中框 vs 背壳）、厂家对比的正确控制变量** |
 | `02_日志/` `03_数据/` `04_现场测量/` `07_方法/` | 原始日志摘录、统计 CSV、现场测量协议与记录表、取数脚本与远程通道说明 |
 | `07_方法/prod/` | **产线逐箱取值链路**：`extract-rfid-boxes2.ps1`（逐箱 record）/ `extract-epc-tags.ps1`（逐次读取）/ `probe-rfid-history.ps1`（326 天 readStatus 统计）+ README（口径与不确定性） |
 | `03_数据/prod_readout_20260922_20261022.csv` | 逐日：箱数 / `readStatus` 占比 / 窗口内读到标签的箱占比 / 读全 6 个的箱数 |
@@ -85,6 +86,7 @@ pip install -r 09_报告/_build/requirements.txt
 | 重渲 3D | `blender --background --factory-startup --python 09_报告/_build/rfid3d.py` → `python 09_报告/_build/compose_3d.py` | 输出到 `_build/_3d_out/`；**仓库已带 13 帧成品，不装 Blender 也能直接拼图** |
 | 导 PDF / 逐页 PNG 核对 | `python 09_报告/_build/render_ppt.py` | 走本机 PowerPoint COM（Windows + Office） |
 | 实测数据替换 | 填 `10_实测框架/*.csv` → `python 09_报告/_build/apply_measured.py` | 出 `fig7m/fig8m/fig11m` + `实测汇总.md` |
+| 包装机型口径重出 | `py -3.12 09_报告/_build/make_pkg_variants.py`（出 `_sim/G_包装机型_模拟.csv` + `figs/fig14_pkg_variants.png`）→ `py -3.12 09_报告/_build/make_slide10_pkg.py --pptx <deck>` | 汇报 PPT 第 10 页与 fig14 同步刷新 |
 
 - **所有脚本的路径都相对脚本自身**（`_HERE / REP / ROOT`），换机不需要改任何绝对路径。
 - Blender 4.3 建议用绝对路径调用（如 `"C:/Program Files/Blender Foundation/Blender 4.3/blender.exe"`）；
