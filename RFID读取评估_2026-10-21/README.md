@@ -86,7 +86,7 @@ pip install -r 09_报告/_build/requirements.txt
 | 重渲 3D | `blender --background --factory-startup --python 09_报告/_build/rfid3d.py` → `python 09_报告/_build/compose_3d.py` | 输出到 `_build/_3d_out/`；**仓库已带 13 帧成品，不装 Blender 也能直接拼图** |
 | 导 PDF / 逐页 PNG 核对 | `python 09_报告/_build/render_ppt.py` | 走本机 PowerPoint COM（Windows + Office） |
 | 实测数据替换 | 填 `10_实测框架/*.csv` → `python 09_报告/_build/apply_measured.py` | 出 `fig7m/fig8m/fig11m` + `实测汇总.md` |
-| 包装机型口径重出 | `py -3.12 09_报告/_build/make_pkg_variants.py`（出 `_sim/G_包装机型_模拟.csv` + `figs/fig14_pkg_variants.png`）→ `py -3.12 09_报告/_build/make_slide10_pkg.py --pptx <deck>` | 汇报 PPT 第 10 页与 fig14 同步刷新 |
+| 包装机型口径重出 | `py -3.12 09_报告/_build/make_pkg_variants.py`（出 `_sim/G_包装机型_模拟.csv` + `figs/fig14_pkg_variants.png`）→ `py -3.12 09_报告/_build/make_slide10_pkg.py --pptx <deck>` | 汇报 PPT「包装机型口径」页（第 11 页）与 fig14 同步刷新 |
 
 - **所有脚本的路径都相对脚本自身**（`_HERE / REP / ROOT`），换机不需要改任何绝对路径。
 - Blender 4.3 建议用绝对路径调用（如 `"C:/Program Files/Blender Foundation/Blender 4.3/blender.exe"`）；
