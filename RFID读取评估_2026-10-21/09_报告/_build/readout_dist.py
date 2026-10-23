@@ -95,6 +95,11 @@ def main():
             "le1_pct": pct(sum(d[0:2]), n), "le2_pct": pct(sum(d[0:3]), n),
             "le3_pct": pct(sum(d[0:4]), n), "le4_pct": pct(sum(d[0:5]), n),
             "le5_pct": pct(sum(d[0:6]), n), "full6_pct": pct(d[6], n),
+            # 分母剔除「读到 0 个」的箱：只在「读到 ≥1 个」的箱里看分布（更宽松的口径）
+            "boxes_ge1": n - d[0],
+            "ge1_le1_pct": pct(sum(d[1:2]), n - d[0]), "ge1_le2_pct": pct(sum(d[1:3]), n - d[0]),
+            "ge1_le3_pct": pct(sum(d[1:4]), n - d[0]), "ge1_le4_pct": pct(sum(d[1:5]), n - d[0]),
+            "ge1_le5_pct": pct(sum(d[1:6]), n - d[0]), "ge1_full6_pct": pct(d[6], n - d[0]),
             "avg_tags": round(sum(i * d[i] for i in range(7)) / n, 2),
         }
         rows.append(row)
@@ -114,6 +119,10 @@ def main():
         "le1_pct": pct(sum(d[0:2]), n), "le2_pct": pct(sum(d[0:3]), n),
         "le3_pct": pct(sum(d[0:4]), n), "le4_pct": pct(sum(d[0:5]), n),
         "le5_pct": pct(sum(d[0:6]), n), "full6_pct": pct(d[6], n),
+        "boxes_ge1": n - d[0],
+        "ge1_le1_pct": pct(sum(d[1:2]), n - d[0]), "ge1_le2_pct": pct(sum(d[1:3]), n - d[0]),
+        "ge1_le3_pct": pct(sum(d[1:4]), n - d[0]), "ge1_le4_pct": pct(sum(d[1:5]), n - d[0]),
+        "ge1_le5_pct": pct(sum(d[1:6]), n - d[0]), "ge1_full6_pct": pct(d[6], n - d[0]),
         "avg_tags": round(sum(i * d[i] for i in range(7)) / n, 2),
     })
 
@@ -124,13 +133,20 @@ def main():
         w.writeheader(); w.writerows(rows)
     print("wrote", out)
 
-    print("\n| HQ代码 | 背壳 | 箱数 | 0 个 | 1 | 2 | 3 | 4 | 5 | 6 | ≤1 | ≤2 | ≤3 | ≤4 | ≤5 | 读全6 |")
+    print("\n（口径 A：全部箱）")
+    print("| HQ代码 | 背壳 | 箱数 | 0 个 | 1 | 2 | 3 | 4 | 5 | 6 | ≤1 | ≤2 | ≤3 | ≤4 | ≤5 | 读全6 |")
     print("|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|")
     for r in rows:
         print(f"| {r['hq_code']} | {r['shell']} | {r['boxes']:,} | " +
               " | ".join(f"{r[f'boxes_{i}']:,}" for i in range(7)) +
               f" | {r['le1_pct']}% | {r['le2_pct']}% | {r['le3_pct']}% | {r['le4_pct']}% | {r['le5_pct']}% | {r['full6_pct']}% |")
-    print("\n注意：≤N 是累计（读到 ≤N 个的箱占比），读全 6 个＝读到 6 个（=100%−≤5）。")
+    print("\n（口径 B：分母剔除读到 0 个的箱 —— 更宽松的「读到几个」）")
+    print("| HQ代码 | 背壳 | 读到≥1 箱 | ≤1 | ≤2 | ≤3 | ≤4 | ≤5 | 读全 6 个 |")
+    print("|---|---|---|---|---|---|---|---|---|")
+    for r in rows:
+        print(f"| {r['hq_code']} | {r['shell'] or '—'} | {r['boxes_ge1']:,} | {r['ge1_le1_pct']}% | "
+              f"{r['ge1_le2_pct']}% | {r['ge1_le3_pct']}% | {r['ge1_le4_pct']}% | {r['ge1_le5_pct']}% | {r['ge1_full6_pct']}% |")
+    print("\n注意：口径 A 的 ≤N 含 0 个；口径 B 只在「读到 ≥1 个」的箱里算，读全 6 个＝100%−≤5。")
 
 
 if __name__ == "__main__":

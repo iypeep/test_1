@@ -129,20 +129,21 @@ def main():
     old._element.getparent().remove(old._element)
 
     order = [("AX7907", "未标注"), ("AX8252", "塑料"), ("AX6727", "未标注"), ("AX8252", "金属")]
-    HEAD = ["HQ代码", "客户代码", "尺寸 / 品类", "背壳（MES）", "箱数", "readStatus\n=True",
-            "≤5", "≤4", "≤3", "≤2", "≤1", "读全 6 个"]
+    # 口径 B：分母＝读到 ≥1 个整机标签的箱（0 个的箱不计入，只在「箱数 / 读到≥1」两列体现）
+    HEAD = ["HQ代码", "客户代码", "尺寸 / 品类", "背壳（MES）", "箱数", "读到\n≥1 箱",
+            "≤1", "≤2", "≤3", "≤4", "≤5", "读全 6 个"]
     rows = [HEAD]
     for key in order:
         b, d = base[key], dist[key]
         rows.append([b["hq_code"], b["customer_code"], b["size_category"], b["shell"],
-                     f"{int(b['boxes']):,}", b["read_true_pct"] + "%",
-                     f"{float(d['le5_pct']):.2f}%", f"{float(d['le4_pct']):.2f}%",
-                     f"{float(d['le3_pct']):.2f}%", f"{float(d['le2_pct']):.2f}%",
-                     f"{float(d['le1_pct']):.2f}%", b["full6_pct"] + "%"])
-    rows.append(["合计", "四个在产组合", "—", "—", f"{int(total['boxes']):,}", total["read_true_pct"] + "%",
-                 f"{float(total['le5_pct']):.2f}%", f"{float(total['le4_pct']):.2f}%",
-                 f"{float(total['le3_pct']):.2f}%", f"{float(total['le2_pct']):.2f}%",
-                 f"{float(total['le1_pct']):.2f}%", total["full6_pct"] + "%"])
+                     f"{int(b['boxes']):,}", f"{int(d['boxes_ge1']):,}",
+                     f"{float(d['ge1_le1_pct']):.2f}%", f"{float(d['ge1_le2_pct']):.2f}%",
+                     f"{float(d['ge1_le3_pct']):.2f}%", f"{float(d['ge1_le4_pct']):.2f}%",
+                     f"{float(d['ge1_le5_pct']):.2f}%", f"{float(d['ge1_full6_pct']):.2f}%"])
+    rows.append(["合计", "四个在产组合", "—", "—", f"{int(total['boxes']):,}", f"{int(total['boxes_ge1']):,}",
+                 f"{float(total['ge1_le1_pct']):.2f}%", f"{float(total['ge1_le2_pct']):.2f}%",
+                 f"{float(total['ge1_le3_pct']):.2f}%", f"{float(total['ge1_le4_pct']):.2f}%",
+                 f"{float(total['ge1_le5_pct']):.2f}%", f"{float(total['ge1_full6_pct']):.2f}%"])
 
     col_w = [1.05, 1.95, 1.85, 0.95, 0.95, 1.05, 0.62, 0.62, 0.62, 0.62, 0.62, 0.95]
     tb = table(p4, rows, x, y, 12.10, col_w, row_h=0.38, fs=8.4, hfs=7.6,
@@ -164,8 +165,9 @@ def main():
             tf = sh.text_frame
             tf.paragraphs[0].clear()
             r = tf.paragraphs[0].add_run()
-            r.text = ("31 天 113,667 箱中可映射机型的 83,706 箱；≤N＝该箱窗口内读到的整机标签数 ≤N 的箱占比（累计），"
-                      "读全 6 个＝读到 6 个。95.0% 的箱一个标签都读不到，所以各档都在 98% 以上（AX6727 例外，见右）。")
+            r.text = ("分母＝该组「读到 ≥1 个」的箱（读到 0 个的箱不计入，只在「箱数 / 读到≥1 箱」两列体现）；"
+                      "≤N＝这些箱里读到 ≤N 个的占比（累计），读全 6 个＝读到 6 个。"
+                      "31 天 113,667 箱中可映射机型 83,706 箱，其中只有 5,247 箱（6.3%）读到过标签。")
             set_font(r, 8.2, False, GRAY)
             break
 
@@ -179,10 +181,15 @@ def main():
         for sh in p5.shapes:
             if sh.has_text_frame and sh.text_frame.text.strip().startswith("结论"):
                 tf = sh.text_frame
+                # 幂等：先删掉上一轮加过的「≤1 / 只读到 1 个」行
+                for para in list(tf.paragraphs):
+                    if para.text.startswith("一箱读到 ≤1") or para.text.startswith("读到标签的"):
+                        para._p.getparent().remove(para._p)
                 p = tf.add_paragraph()
                 p.line_spacing = 1.25
                 r = p.add_run()
-                r.text = f"一箱读到 ≤1 个：合计 {float(total['le1_pct']):.1f}%（AX6727 最低 {float(dist[('AX6727','未标注')]['le1_pct']):.1f}%）。"
+                r.text = (f"读到标签的 5,247 箱里：只读到 1 个占 {float(total['ge1_le1_pct']):.1f}%、"
+                          f"读全 6 个仅 {float(total['ge1_full6_pct']):.1f}%。")
                 set_font(r, 8.8, False, INK)
                 print("P5 conclusion updated")
                 break
