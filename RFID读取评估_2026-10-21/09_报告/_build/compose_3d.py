@@ -18,11 +18,11 @@ def f(sz, bold=False):
     return ImageFont.truetype(FB if bold else F, sz)
 
 
-def panel(name, w=620, caption="", sub="", badge=""):
+def panel(name, w=620, caption="", sub="", badge="", cap_px=21, sub_px=17, band=62):
     im = Image.open(os.path.join(SRC, name)).convert("RGB")
     h = int(im.height * w / im.width)
     im = im.resize((w, h), Image.LANCZOS)
-    out = Image.new("RGB", (w, h + 62), "white")
+    out = Image.new("RGB", (w, h + band), "white")
     out.paste(im, (0, 0))
     d = ImageDraw.Draw(out)
     d.line([0, h, w, h], fill=LINE, width=2)
@@ -31,9 +31,9 @@ def panel(name, w=620, caption="", sub="", badge=""):
         d.rectangle([10, 10, 10 + bw, 42], fill=ACCENT)
         d.text((20, 16), badge, font=f(22, True), fill="white")
     if caption:
-        d.text((12, h + 8), caption, font=f(21, True), fill=INK)
+        d.text((12, h + 8), caption, font=f(cap_px, True), fill=INK)
     if sub:
-        d.text((12, h + 34), sub, font=f(17), fill=GRAY)
+        d.text((12, h + max(34, 12 + cap_px)), sub, font=f(sub_px), fill=GRAY)
     return out
 
 
