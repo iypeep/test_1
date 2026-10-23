@@ -39,7 +39,9 @@ INK, GRAY, LINE = "1A1A1A", "8C8C8C", "D9D9D9"
 ACCENT, TINT, RED = "3E5DA8", "E6EDF9", "C0504D"
 LATIN, EA = "Arial", "微软雅黑"
 W, H, MARGIN = 13.333, 7.5, 0.62
-TOTAL = 11
+FIX_R4R5 = False      # 老 deck 的 R4+R5 页（有「配置」表）才需要
+FIX_R6 = False        # 老 deck 的 R6 页「读全/6」列是空的时才打开
+ADD_FIG11 = False     # 老 deck 的 R6 页左半页空着时才打开
 TITLE = "包装机型口径：KKE / N-KKE × 背壳 —— 厂家不能混在包装里比"
 KICK = ("经理 10-23 口径：金属背壳版标签贴中框、塑料背壳版贴背壳；KKE＝带卡通保护壳、N-KKE＝只有平板本身。"
         "条件 9 dBi / 箱面 10 cm / 姿态 A1，数值为模型预测")
@@ -222,7 +224,8 @@ def build_page(s, notes_template):
         ("厂家对比：把「厂家」从包装变量里拆出来", 9.2, True, ACCENT),
         ("固定：包装机型 + 箱型 + 姿态 A1 + 天线方向/距离 + 过板 ≥30 s × ≥3 箱；变量：只换读码器/天线。",
          8.2, False, INK),
-        ("R4+R5 页的 A/B 厂 2 dB 是模型假设 —— 模组实测「还没做」（唐工 10-23），须在本口径下重测。",
+        ("厂家（A/B 模组）实测仍未做（唐工 10-23）；报告里的「B 厂 −2 dB」是模型假设 —— "
+         "必须在同一包装机型、同一箱体下只换读码器重测。",
          8.2, False, RED),
     ], spacing=1.2)
     r.name = "S10_vendor"
@@ -242,8 +245,9 @@ def build_page(s, notes_template):
         ("现网还分不出 KKE / N-KKE", 9.4, True, RED),
         ("背壳材质有：MES CongfigSize 写 (Metal)/(Plastic)，AX8252 两种都在产。", 8.2, False, INK),
         ("KKE / N-KKE 没有：机台日志、Rfid_<日期>.log、EpcLog 里都没有这个字段。", 8.2, False, INK),
-        ("31 天实测：AX8252 金属 95.2% 一箱 0 个、塑料 98.9% —— 都被系统级漏读压平，"
-         "材质与外壳的效应在现网看不见。", 8.2, False, INK),
+        ("现网能按背壳分：8252 塑料 98.9%、8252 金属 95.2%、7907 未标注 99.1%（都是几乎全漏）；"
+         "KKE / N-KKE 分不出 —— 材质与外壳的效应被系统级漏读压平（与 R6 页「没拉开差距」不矛盾）。",
+         8.2, False, INK),
         ("需要：机型 × KKE/N-KKE 的配置码或 BOM 区分方式（拿到才能按四象限重算箱数）。", 8.2, True, ACCENT),
     ], spacing=1.18)
     r.name = "S10_gap"
@@ -256,14 +260,9 @@ def build_page(s, notes_template):
                  size=10.2, bold=True, anchor=MSO_ANCHOR.MIDDLE)
     tb.name = "S10_take"
 
-    # 页脚
-    textbox(s, MARGIN, 7.02, 8.0, 0.26,
-            "RFID 读取能力评估 · 7H3AA-PALLET · 2026-10-22", size=8, color=GRAY).name = "S10_foot"
-    textbox(s, W - MARGIN - 0.8, 7.02, 0.8, 0.26, f"10 / {TOTAL}", size=8, color=GRAY,
-            align=PP_ALIGN.RIGHT).name = "S10_pageno"
-    hline(s, MARGIN, 6.94, W - 2 * MARGIN, color="ECECEC").name = "S10_footline"
-
-    ns = s.notes_slide
+    if notes_template is None:
+        return
+    ns = s.notes_slide  # 备注：deck 的 notes master 没有正文占位符时从既有备注页复制
     if ns.notes_text_frame is None:
         # 本 deck 的 notes master 没有正文占位符：从既有备注页复制一个
         for sp in notes_template.shapes:
@@ -277,9 +276,11 @@ def build_page(s, notes_template):
         "KKE 是带卡通保护壳包装，N-KKE 是只有平板本身，卡通壳按模型固定再吃 2.5 dB。"
         "四个象限的预测：塑料下置 5.95–5.99，金属下置只有 1.63–3.05、换侧向 5.22–5.73。"
         "这正好解释 10-22 现场「0 到 40 cm 读数都在 0–1」：不是距离不够近，是照射方向与标签位置不匹配。"
-        "另外要主动交代两点：一是现网日志里没有 KKE/N-KKE 字段，只有 (Metal)/(Plastic)，所以之前只能按机型+背壳分组，"
+        "另外要主动交代三点：一是现网日志里没有 KKE/N-KKE 字段，只有 (Metal)/(Plastic)，所以之前只能按机型+背壳分组，"
         "要按四象限重算箱数需要事业部给配置码或 BOM 区分；二是厂家 A/B 的 2 dB 是模型假设，"
         "模组实测还没做（唐工下午补），必须在固定包装机型的前提下重测，否则厂家与包装混在一起，结论不可用。"
+        "三是这一页与 R6 页的实测不矛盾：现网按背壳分也几乎全漏（98.9% vs 95.2%），"
+        "材质差异被系统级漏读压平；金属背壳的真正问题是照射方向与标签位置不匹配，不是「金属就一定更差」。"
     )
 
 
@@ -333,7 +334,8 @@ def fix_r6_slide(slide, prs):
             val[r["代号"]] = float(r["读全数_6"])
     filled = 0
     for sh in slide.shapes:
-        if getattr(sh, "has_table", False) and sh.has_table and sh.table.cell(0, 0).text.strip() == "代号":
+        if (getattr(sh, "has_table", False) and sh.has_table
+                and sh.table.cell(0, 0).text.strip() == "代号" and len(sh.table.columns) > 2):
             tbl = sh.table
             for ri in range(1, len(tbl.rows)):
                 code = tbl.cell(ri, 0).text.strip()
@@ -350,7 +352,7 @@ def fix_r6_slide(slide, prs):
         if sh.shape_type == 1 and abs(sh.width / 914400 - 5.16) < 0.05 and sh.height / 914400 > 1.4:
             sh.height = Inches(1.30)
     has_pic = any(sh.shape_type == 13 for sh in slide.shapes)
-    if not has_pic:
+    if not has_pic and ADD_FIG11:
         p = os.path.join(FIG, "fig11_variants.png")
         iw, ih = Image.open(p).size
         sc = min(6.6 / iw, 3.4 / ih)
@@ -386,11 +388,19 @@ def main():
 
     # -------------------------------------------------- 1b) 第 8 页（R4+R5）配置表：原表被误删成
     # 2 个配置且 B 厂行套着 A 厂的数据 —— 按 _sim 的 C/F 两个 CSV 重建成 4 配置
-    rebuild_reader_table(s8)
+    if FIX_R4R5:
+        rebuild_reader_table(s8)
 
-    # -------------------------------------------------- 2) 第 9 页（R6）结论条指向新页
-    s9 = prs.slides[8]
-    for sh in s9.shapes:
+    # -------------------------------------------------- 2) R6 页结论条指向新页（按标题定位，不依赖页序）
+    r6 = None
+    for sl in prs.slides:
+        if any(sh.has_text_frame and sh.text_frame.text.strip().startswith("R6") for sh in sl.shapes):
+            r6 = sl
+    if r6 is None:
+        raise SystemExit("找不到 R6 页")
+    if FIX_R6:
+        fix_r6_slide(r6, prs)
+    for sh in r6.shapes:
         if sh.has_text_frame and "若产线要上金属背壳机型" in sh.text_frame.text:
             for para in sh.text_frame.paragraphs:
                 for run in para.runs:
@@ -398,11 +408,8 @@ def main():
                         run.text = ("若产线要上金属背壳机型（标签在中框）：把读取方向改成侧向，别把下置天线当万能（见 P10 四象限）")
             print("patched slide9 takeaway")
 
-    # -------------------------------------------------- 2b) 第 9 页（R6）：「读全/6」列是空的、左半页空着
-    # 数值按 _sim/E_箱型对比_模拟.csv 补回，左侧补 fig11
-    fix_r6_slide(s9, prs)
 
-    # -------------------------------------------------- 3) 追加 / 重建第 10 页
+    # -------------------------------------------------- 3) 新建 / 重建「包装机型口径」页，插到 R6 页之后
     target = None
     for sl in prs.slides:
         if any(sh.has_text_frame and sh.text_frame.text.startswith("包装机型口径") for sh in sl.shapes):
@@ -410,12 +417,28 @@ def main():
             break
     if target is None:
         target = prs.slides.add_slide(prs.slide_layouts[6])
-        print("appended slide 10")
+        sldIdLst = prs.slides._sldIdLst
+        ids = list(sldIdLst)
+        sldIdLst.remove(ids[-1])                      # 刚追加的这张
+        pos = list(prs.slides).index(r6) + 1           # 插到 R6 页之后
+        sldIdLst.insert(pos, ids[-1])
+        print(f"inserted packaging slide at position {pos + 1}")
     else:
         for sh in list(target.shapes):
             sh._element.getparent().remove(sh._element)
         print("rebuilt existing packaging slide")
-    build_page(target, prs.slides[7].notes_slide)
+    notes_tpl = None
+    for sl in prs.slides:
+        try:
+            if sl.notes_slide.notes_text_frame is not None:
+                notes_tpl = sl.notes_slide
+                break
+        except Exception:
+            pass
+    if notes_tpl is not None:
+        build_page(target, notes_tpl)
+    else:
+        build_page(target, None)
 
     # -------------------------------------------------- 4) 页脚按页码重排（本 deck 手工删过页，
     # 原有 "4 / 10""6 / 10""7 / 10" 与实际页码已经对不上，这里统一按 幻灯片序号 / 总页数 重写）
