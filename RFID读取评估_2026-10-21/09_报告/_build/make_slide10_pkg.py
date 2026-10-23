@@ -405,8 +405,8 @@ def main():
             for para in sh.text_frame.paragraphs:
                 for run in para.runs:
                     if "若产线要上金属背壳机型" in run.text:
-                        run.text = ("若产线要上金属背壳机型（标签在中框）：把读取方向改成侧向，别把下置天线当万能（见 P10 四象限）")
-            print("patched slide9 takeaway")
+                        run.text = ("若产线要上金属背壳机型（标签在中框）：把读取方向改成侧向，下置天线对它无效（见下页四象限）")
+            print("patched R6 takeaway")
 
 
     # -------------------------------------------------- 3) 新建 / 重建「包装机型口径」页，插到 R6 页之后
