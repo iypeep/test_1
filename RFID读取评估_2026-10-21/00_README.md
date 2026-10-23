@@ -4,6 +4,21 @@
 > 内容：机台日志摘录、标签实测、机型/箱数统计、自研读码器监测流水、现场测量协议与记录表、模组选型清单。
 > 全部数字可复核：日志原文在 `02_日志`，统计脚本在 `07_方法`。
 
+## 2026-10-23 改版：PPT / 3D / 手册都在哪
+
+| 东西 | 位置 |
+|---|---|
+| **最新汇报 PPT / PDF（11 页）** | `RFID读取能力评估-改动版_完善_20261022.pptx` / `.pdf`（本目录根） |
+| 整页重建脚本（从 `_pure` 底稿生成全部 11 页） | `09_报告/_build/improve_deck_20261022.py` |
+| 3D **可编辑场景**（.blend，贴图已 pack） | `09_报告/_build/_3d_out2/*.blend` —— 19 个：A1–A6、D_up/D_down/D_side、THREE_readers、MOD_R700/R420/FX9600/M6E、ANT_55/ANT_6/ANT_8/ANT_9、R3_scan |
+| 3D 建模脚本（Blender 4.3） | `09_报告/_build/rfid3d_fix.py`（姿态/三天线）、`rfid3d_modules.py`（读码器）、`rfid3d_antennas.py`（板状天线）、`rfid3d_r3.py`（剖箱+多距离） |
+| 拼图 / 图表脚本 | `09_报告/_build/make_fig_relabel.py`、`make_fig4_fix.py`、`make_fig_r2_row.py`、`make_fig_antenna_row.py`、`make_fig_r3_bars.py`、`make_fig_r4_ant.py` |
+| 单帧渲染 PNG | `09_报告/_build/_3d_out2/*.png`（与 .blend 同名） |
+| 报告用图 | `09_报告/figs/`：新增 `fig4_3d_placements_v2`、`fig5_3d_antennas`、`fig6_3d_readers_r45`、`fig_three_readers`、`r2_modules_row`、`antenna_row`、`r3_distance_scan`、`r3_theory_vs_actual`、`r4_9_vs_6` |
+| **天线/模组手册** | `09_报告/手册/`：Laird S9025P、S9028PCL/PCR 两份 datasheet（PDF）+ 网页类产品页规格摘录 + 索引（`README.md`） |
+
+改版流程：改 `rfid3d_*.py` → `blender -b -P ...`（同时输出 PNG + .blend）→ 跑对应 `make_fig_*.py` 拼图 → 跑 `improve_deck_20261022.py` 生成 PPT → `render_ppt.py` 导 PNG 核对。
+
 ## 先看这几份
 
 | 文件 | 看什么 |
@@ -62,11 +77,14 @@
                                 fig7 距离曲线 / fig8 增益厂家 / fig11 箱型 / fig12 过板 6/6
                                 fig13 现网逐箱读取分布（实测：95% 一箱 0 个）
   figs/hw/                      厂家手册/产品页原图（M-703 / Kathrein / Silion）
+  手册/                          P6 天线依据：Laird S9025P / S9028PCL datasheet（PDF）+
+                                 网页类产品页规格摘录 + 索引 README
   _sim/                         预测结果 CSV（A/B/C/E）+ 手册参数表 + 模型假设
   _build/                       生成脚本（rfid3d.py / make_labels.py / compose_*.py /
                                 sim_model.py / make_ppt2.py / make_ppt3.py（增量：改名+追加 P9/P10）/
                                 model_baseline.py（逐机型基线）/ make_fig_prod.py（fig13）/
                                 make_fig_variants.py（fig11）/ apply_measured.py / render_ppt.py）
+  _build/_3d_out2/               3D 单帧 PNG + 同名可编辑 .blend（19 个，贴图已打包）
   _ref/  _render/  _render2/     风格参考页 / 渲染核对 PNG
 10_实测框架/                    现场要填的五张 CSV + README（填写纪律、判定口径、替换流程）
 11_进度与待办_20261022.md       进度快照 + 待办 + 机型口径决定（换机先看这份）
