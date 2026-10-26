@@ -89,6 +89,7 @@ pip install -r 09_报告/_build/requirements.txt
 | 实测数据替换 | 填 `10_实测框架/*.csv` → `python 09_报告/_build/apply_measured.py` | 出 `fig7m/fig8m/fig11m` + `实测汇总.md` |
 | R6 结论页重排 | `py -3.12 09_报告/_build/make_r6_after_p4.py --pptx <deck>`（按标题定位、删 7771/7513 行、把 R6 移到机型口径页之后、附图） | 11 页 deck：P4 机型口径（4 行）→ P5 机型口径结论（含读取方式图） |
 | SN 换真值 | `py -3.12 09_报告/_build/make_sn_real.py --pptx <deck>`（把示例 SN 换成 EpcLog 实读 DSN；`REAL_SNS` 在使用前先核对） | P3/P8/P9 的「读到 SN」列与脚注 |
+| 简洁版重排 | `py -3.12 09_报告/_build/make_deck_plain.py --pptx <deck>`（加目录、A1–A6→*面朝下、每页实验/变量/结论三段、砍长段落）；图 `make_fig4_faces.py` | 12 页客户版 |
 | P5 结论页重做 | `py -3.12 09_报告/_build/make_p5_rework.py --pptx <deck>`（只留塑料/金属两个 readStatus=True 大数；代号表补箱数与 readStatus；删重复 bullet） | P5 整页重建，顺序：先 make_r6_after_p4 → 再 make_p5_rework |
 
 - **所有脚本的路径都相对脚本自身**（`_HERE / REP / ROOT`），换机不需要改任何绝对路径。
