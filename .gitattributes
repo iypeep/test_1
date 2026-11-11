@@ -17,3 +17,4 @@
 *.exe binary
 *.dll binary
 *.7z binary
+*.7z.* binary
